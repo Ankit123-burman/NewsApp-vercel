@@ -5,16 +5,17 @@ import Card from './Card';
 function Navbar() {
     const [newsData, setData] = useState([]);
     const [search, setSearch] = useState('India'); 
-    const API_KEY = 'ac0b3a664c3f48dbad54f3efbe600eab';
+    const API_KEY = '9212244b308cc91ee285c0f506cbd2ea';
 
     useEffect(() => {
         getData();
     }, []);
+    
 
     const getData = async (e) => {
         if (e) e.preventDefault();  
         try {
-            const response = await fetch(`https://newsapi.org/v2/everything?q=${search}&apiKey=${API_KEY}`);
+            const response = await fetch(`https://gnews.io/api/v4/search?q=${search}&lang=en&country=${search}&max=10&apikey=${API_KEY}`);
             const Data = await response.json();
             console.log(Data.articles);
             setData(Data.articles);  
@@ -22,6 +23,8 @@ function Navbar() {
             console.log('Error fetching data', error);
         }
     };
+
+   
 
     const handleSearch = (e) => {
         setSearch(e.target.value);  
@@ -36,38 +39,38 @@ function Navbar() {
         <>
             <nav className="navbar navbar-expand-lg sticky-top bg-white text-black h-75">
                 <div className="container-fluid">
-                    <a className="navbar-brand text-black" href="#"><h1>KalTakApp</h1></a>
+                    <button className="navbar-brand text-black" href="#"><h1>KalTakApp</h1></button>
                     <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                         <span className="navbar-toggler-icon"></span>
                     </button>
                     <div className="collapse navbar-collapse" id="navbarNav">
                         <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                             <li className="nav-item">
-                                <a className="nav-link active pointer" aria-current="page" onClick={topics} value="India">Home</a>
+                                <button className="nav-link active cursor-pointer  "  aria-current="page" onClick={topics} value="India">Home</button>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link text-black pointer" onClick={topics} value="World">World</a>
+                                <button className="nav-link text-black cursor-pointer " onClick={topics} value="World">World</button>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link text-black pointer" onClick={topics} value="Politics">Politics</a>
+                                <button className="nav-link text-black cursor-pointer " onClick={topics} value="Politics">Politics</button>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link text-black pointer" onClick={topics} value="Technology">Technology</a>
+                                <button className="nav-link text-black cursor-pointer " onClick={topics} value="Technology">Technology</button>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link text-black pointer" onClick={topics} value="Sports">Sports</a>
+                                <button className="nav-link text-black cursor-pointer " onClick={topics} value="Sports">Sports</button>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link text-black pointer" onClick={topics} value="Fitness">Fitness</a>
+                                <button className="nav-link text-black cursor-pointer " onClick={topics} value="Fitness">Fitness</button>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link text-black pointer" onClick={topics} value="Space">Space</a>
+                                <button className="nav-link text-black cursor-pointer " onClick={topics} value="Space">Space</button>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link text-black pointer" onClick={topics} value="Fact">Fact</a>
+                                <button className="nav-link text-black cursor-pointer " onClick={topics} value="Fact">Fact</button>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link text-black pointer" onClick={topics} value="Comedy">Comedy</a>
+                                <button className="nav-link text-black cursor-pointer " onClick={topics} value="Comedy">Comedy</button>
                             </li>
                         </ul>
                         <form className="d-flex" onSubmit={getData}>
