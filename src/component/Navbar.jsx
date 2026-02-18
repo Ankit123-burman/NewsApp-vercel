@@ -1,87 +1,144 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
 import { useState, useEffect } from 'react';
 import Card from './Card';
 
+
 function Navbar() {
     const [newsData, setData] = useState([]);
-    const [search, setSearch] = useState('India'); 
-    const API_KEY = '9212244b308cc91ee285c0f506cbd2ea';
+    const [search, setSearch] = useState('India');
+    const [loading, setLoading] = useState(false);
+    const [activeCategory, setActiveCategory] = useState('India');
 
     useEffect(() => {
         getData();
-    }, []);
-    
+    }, [search]);
 
-    const getData = async (e) => {
-        if (e) e.preventDefault();  
+    const getData = async () => {
+        setLoading(true);
+
         try {
-            const response = await fetch(`https://gnews.io/api/v4/search?q=${search}&lang=en&country=${search}&max=10&apikey=${API_KEY}`);
-            const Data = await response.json();
-            console.log(Data.articles);
-            setData(Data.articles);  
+            const url = `https://gnews.io/api/v4/search?q=${search}&lang=en&country=in&max=10&apikey=${import.meta.env.VITE_GNEWS_API_KEY}`;
+
+            const response = await fetch(url);
+            const data = await response.json();
+
+            console.log("API RESPONSE 👉", data);
+
+            if (data.articles) {
+                setData(data.articles);
+            } else {
+                setData([]);
+                console.log("No articles found");
+            }
+
         } catch (error) {
-            console.log('Error fetching data', error);
+            console.log("Error fetching data 👉", error);
+        } finally {
+            setLoading(false);
         }
     };
 
-   
-
     const handleSearch = (e) => {
-        setSearch(e.target.value);  
+        setSearch(e.target.value || '');
     };
 
     const topics = (e) => {
-        setSearch(e.target.getAttribute('value'));
-        getData(); 
+        const category = e.target.getAttribute('value');
+        setSearch(category);
+        setActiveCategory(category);
     };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        setActiveCategory('');
+    };
+
+    // Updated categories with better search queries for GNews API
+    const categories = [
+        { name: 'Home', value: 'India', icon: '🏠' },
+        { name: 'World', value: 'World', icon: '🌍' },
+        { name: 'Politics', value: 'Politics', icon: '⚖️' },
+        { name: 'Technology', value: 'Technology AI startup', icon: '💻' },
+        { name: 'Sports', value: 'Sports', icon: '⚽' },
+        { name: 'Business', value: 'Business Economy', icon: '💼' },
+        { name: 'Health', value: 'Health Fitness', icon: '💪' }
+    ];
+
+    console.log("API KEY 👉", import.meta.env.VITE_GNEWS_API_KEY);
 
     return (
         <>
-            <nav className="navbar navbar-expand-lg sticky-top bg-white text-black h-75">
-                <div className="container-fluid">
-                    <button className="navbar-brand text-black" href="#"><h1>KalTakApp</h1></button>
-                    <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                        <span className="navbar-toggler-icon"></span>
-                    </button>
-                    <div className="collapse navbar-collapse" id="navbarNav">
-                        <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-                            <li className="nav-item">
-                                <button className="nav-link active cursor-pointer  "  aria-current="page" onClick={topics} value="India">Home</button>
-                            </li>
-                            <li className="nav-item">
-                                <button className="nav-link text-black cursor-pointer " onClick={topics} value="World">World</button>
-                            </li>
-                            <li className="nav-item">
-                                <button className="nav-link text-black cursor-pointer " onClick={topics} value="Politics">Politics</button>
-                            </li>
-                            <li className="nav-item">
-                                <button className="nav-link text-black cursor-pointer " onClick={topics} value="Technology">Technology</button>
-                            </li>
-                            <li className="nav-item">
-                                <button className="nav-link text-black cursor-pointer " onClick={topics} value="Sports">Sports</button>
-                            </li>
-                            <li className="nav-item">
-                                <button className="nav-link text-black cursor-pointer " onClick={topics} value="Fitness">Fitness</button>
-                            </li>
-                            <li className="nav-item">
-                                <button className="nav-link text-black cursor-pointer " onClick={topics} value="Space">Space</button>
-                            </li>
-                            <li className="nav-item">
-                                <button className="nav-link text-black cursor-pointer " onClick={topics} value="Fact">Fact</button>
-                            </li>
-                            <li className="nav-item">
-                                <button className="nav-link text-black cursor-pointer " onClick={topics} value="Comedy">Comedy</button>
-                            </li>
-                        </ul>
-                        <form className="d-flex" onSubmit={getData}>
-                            <input className="form-control me-2" type="search" placeholder="Search" value={search} onChange={handleSearch} aria-label="Search" />
-                            <button className="btn btn-outline-success text-black" type="submit">Search</button>
+            <nav className="modern-navbar">
+                <div className="navbar-container">
+                    <div className="navbar-brand">
+                        <div className="brand-icon">📰</div>
+                        <h1 className="brand-title">
+                            KalTak<span className="brand-accent">App</span>
+                        </h1>
+                    </div>
+
+                    <div className="navbar-search-desktop">
+                        <form onSubmit={handleSubmit} className="search-form">
+                            <input
+                                type="search"
+                                placeholder="Search news..."
+                                value={search || ''}
+                                onChange={handleSearch}
+                                className="search-input"
+                            />
+                            <button type="submit" className="search-btn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <circle cx="11" cy="11" r="8" strokeWidth="2"/>
+                                    <path d="m21 21-4.35-4.35" strokeWidth="2"/>
+                                </svg>
+                            </button>
                         </form>
                     </div>
                 </div>
+
+                <div className="navbar-categories">
+                    <div className="categories-scroll">
+                        {categories.map((cat) => (
+                            <button
+                                key={cat.value}
+                                onClick={topics}
+                                value={cat.value}
+                                className={`category-btn ${activeCategory === cat.value ? 'active' : ''}`}
+                            >
+                                <span className="category-icon">{cat.icon}</span>
+                                <span className="category-name">{cat.name}</span>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="navbar-search-mobile">
+                    <form onSubmit={handleSubmit} className="search-form">
+                        <input
+                            type="search"
+                            placeholder="Search news..."
+                            value={search || ''}
+                            onChange={handleSearch}
+                            className="search-input"
+                        />
+                        <button type="submit" className="search-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <circle cx="11" cy="11" r="8" strokeWidth="2"/>
+                                <path d="m21 21-4.35-4.35" strokeWidth="2"/>
+                            </svg>
+                        </button>
+                    </form>
+                </div>
             </nav>
-            <div>
-                <Card data={newsData} />
+
+            <div className="content-wrapper">
+                {loading ? (
+                    <div className="loading-container">
+                        <div className="loader"></div>
+                        <p className="loading-text">Loading latest news...</p>
+                    </div>
+                ) : (
+                    <Card data={newsData} />
+                )}
             </div>
         </>
     );
